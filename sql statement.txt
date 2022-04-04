@@ -1,0 +1,31 @@
+DECLARE @country NVARCHAR(100)
+DECLARE @getid CURSOR
+
+SET @getid = CURSOR FOR
+SELECT DISTINCT table.country
+FROM   table
+
+OPEN @getid
+FETCH NEXT
+FROM @getid INTO @country
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    UPDATE table
+	SET daily_vaccinations=CASE noDataCase
+		WHEN NOT EXISTS(SELECT DISTINCT daily_vaccinations
+				FROM table
+				WHERE country=@country;) THEN 0
+		ELSE 
+			((SELECT MAX(daily_vaccinations) FROM
+	 	 	 (SELECT TOP 50 PERCENT daily_vaccinations FROM table WHERE table.country=@country ORDER BY daily_vaccinations))
+			 +
+			 (SELECT MIN(daily_vaccinations) FROM
+		 	 (SELECT TOP 50 PERCENT daily_vaccinations FROM table WHERE table.country=@country ORDER BY daily_vaccinations DESC))
+			) / 2 AS Median
+	END
+	WHERE country=@country
+    FETCH NEXT
+    FROM @getid INTO @id, @name
+END
+CLOSE @getid
+DEALLOCATE @getid
