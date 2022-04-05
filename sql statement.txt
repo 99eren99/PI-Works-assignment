@@ -23,7 +23,7 @@ BEGIN
 		 	 (SELECT TOP 50 PERCENT daily_vaccinations FROM table WHERE table.country=@country ORDER BY daily_vaccinations DESC))
 			) / 2 AS Median
 	END
-	WHERE country=@country
+	WHERE country=@country AND daily_vaccinations=NULL
     FETCH NEXT
     FROM @getid INTO @country
 END
