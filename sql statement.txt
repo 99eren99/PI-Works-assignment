@@ -25,7 +25,7 @@ BEGIN
 	END
 	WHERE country=@country
     FETCH NEXT
-    FROM @getid INTO @id, @name
+    FROM @getid INTO @country
 END
 CLOSE @getid
 DEALLOCATE @getid
